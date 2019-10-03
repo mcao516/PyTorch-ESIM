@@ -62,9 +62,9 @@ def main():
 
     parser.add_argument("--word_vectors", default="glove.6B.300d.txt", type=str,
                         help="Type of pre-trained word embedding should be used.")
-    parser.add_argument("--vector_cache", default="../.vector_cache", type=str,
+    parser.add_argument("--vector_cache", default=".vector_cache", type=str,
                         help="Where to store downloaded word embeddings. (.vector_cache)")
-    parser.add_argument("--data_folder", default="../.data", type=str,
+    parser.add_argument("--data_folder", default=".data", type=str,
                         help="The folder contains SNLI dataset. (.data)")
 
     args = parser.parse_args()
