@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from torch.utils.tensorboard import SummaryWriter
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import MultiStepLR
 from sklearn.metrics import classification_report
 
 from ESIM import ESIM
@@ -97,11 +97,7 @@ class Model:
     def _get_scheduler(self, optimizer):
         """Get scheduler for adjusting learning rate.
         """
-        scheduler = ReduceLROnPlateau(optimizer, mode='max',
-                                      factor=self.args.factor,
-                                      patience=self.args.patience,
-                                      verbose=True)
-        return scheduler
+        return MultiStepLR(optimizer, milestones=[25], gamma=0.1)
 
     def _get_criterion(self):
         """Loss function.
@@ -176,6 +172,9 @@ class Model:
         # compute the average loss (batch loss)
         epoch_loss = train_loss / len(train_iter)
 
+        # update scheduler
+        self.scheduler.step()
+
         return epoch_loss
 
     def evaluate(self, dev_iter, criterion):
@@ -220,9 +219,6 @@ class Model:
                 self.logger.info("Evaluation:")
                 self.logger.info("- loss: {}".format(eval_loss))
                 self.logger.info("- acc: {}".format(eval_acc))
-
-                # update scheduler
-                self.scheduler.step(eval_acc)
 
                 # monitor loss and accuracy
                 if self.writer:
